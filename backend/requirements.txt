@@ -1,0 +1,38 @@
+fastapi
+uvicorn[standard]
+
+# Database
+
+sqlalchemy
+alembic
+pymysql
+
+# Configuration
+
+python-dotenv
+pydantic-settings
+
+# Authentication / Security
+
+python-jose[cryptography]
+passlib[bcrypt]
+
+# Google OAuth / Gmail API
+
+google-auth
+google-auth-oauthlib
+google-api-python-client
+
+# Background jobs
+
+celery
+redis
+
+# HTTP
+
+httpx
+
+# Development / Testing
+
+pytest
+pytest-asyncio
