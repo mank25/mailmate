@@ -29,3 +29,22 @@ Phase 1 focuses on the foundation:
 **User → Connect Gmail → Sync Emails → Store Emails → View Inbox**
 
 AI processing, billing, and advanced automation will be added in later phases.
+
+### Getting Started
+
+**Frontend**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Backend**
+
+```bash
+cd backend
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
