@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
+from cryptography.fernet import Fernet, InvalidToken
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+_fernet = Fernet(settings.token_encryption_key.encode())
 
 
 def hash_password(password: str) -> str:
@@ -28,3 +30,14 @@ def decode_access_token(token: str) -> str | None:
     except JWTError:
         return None
     return payload.get("sub")
+
+
+def encrypt_token(value: str) -> str:
+    return _fernet.encrypt(value.encode()).decode()
+
+
+def decrypt_token(value: str) -> str | None:
+    try:
+        return _fernet.decrypt(value.encode()).decode()
+    except InvalidToken:
+        return None
