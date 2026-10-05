@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, hash_password, verify_password
+from app.core.config import settings
 from app.db import get_db
 from app.deps import ACCESS_TOKEN_COOKIE_NAME, get_current_user
 from app.models.user import User
@@ -18,7 +19,7 @@ def _set_auth_cookie(response: Response, user_id: int) -> None:
         key=ACCESS_TOKEN_COOKIE_NAME,
         value=token,
         httponly=True,
-        secure=True,
+        secure=settings.cookie_secure,
         samesite="lax",
         max_age=COOKIE_MAX_AGE_SECONDS,
     )
@@ -26,6 +27,9 @@ def _set_auth_cookie(response: Response, user_id: int) -> None:
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def signup(payload: SignupRequest, response: Response, db: Session = Depends(get_db)):
+    if not settings.allow_signup and db.query(User).count() > 0:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Signups are disabled on this instance")
+
     existing_user = db.query(User).filter(User.email == payload.email).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")

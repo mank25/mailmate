@@ -27,7 +27,7 @@ def connect(response: Response, current_user: User = Depends(get_current_user)):
         key=OAUTH_STATE_COOKIE_NAME,
         value=state,
         httponly=True,
-        secure=True,
+        secure=settings.cookie_secure,
         samesite="lax",
         max_age=OAUTH_STATE_MAX_AGE_SECONDS,
     )
