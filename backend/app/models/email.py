@@ -1,7 +1,11 @@
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import relationship
 
 from app.db import Base
+
+# MySQL TEXT caps at 64KB; HTML emails are often larger
+BodyText = Text().with_variant(LONGTEXT(), "mysql")
 
 
 class Email(Base):
@@ -19,8 +23,8 @@ class Email(Base):
     cc = Column(Text, nullable=True)
     bcc = Column(Text, nullable=True)
     subject = Column(String(998), nullable=True)
-    body_text = Column(Text, nullable=True)
-    body_html = Column(Text, nullable=True)
+    body_text = Column(BodyText, nullable=True)
+    body_html = Column(BodyText, nullable=True)
     received_at = Column(DateTime, nullable=True)
     is_read = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
