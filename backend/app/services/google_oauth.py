@@ -42,3 +42,17 @@ def get_gmail_profile(access_token: str) -> dict:
     response = httpx.get(PROFILE_URI, headers={"Authorization": f"Bearer {access_token}"})
     response.raise_for_status()
     return response.json()
+
+
+def refresh_access_token(refresh_token: str) -> str:
+    response = httpx.post(
+        TOKEN_URI,
+        data={
+            "refresh_token": refresh_token,
+            "client_id": settings.google_client_id,
+            "client_secret": settings.google_client_secret,
+            "grant_type": "refresh_token",
+        },
+    )
+    response.raise_for_status()
+    return response.json()["access_token"]
