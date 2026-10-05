@@ -1,10 +1,11 @@
 # AI Email Manager
 
-## Product Requirements Document (PRD) & Product Scope
+## Product Requirements Document (PRD) & Project Scope
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** MVP Planning
-**Product Type:** AI-powered email management SaaS
+**Project Type:** Open-source, self-hostable AI email management tool
+**License:** MIT
 **Primary Goal:** Keep a user's inbox clean, organized, actionable, and mentally manageable.
 
 ---
@@ -13,9 +14,9 @@
 
 ## 1.1 Vision
 
-Build an AI-powered email management service that connects to a user's existing mailbox and continuously manages their email.
+Build an open-source, self-hostable AI email manager that connects to a user's existing mailbox and continuously manages their email.
 
-The product should act like an:
+The project should act like an:
 
 > **AI buddy for your inbox.**
 
@@ -29,7 +30,7 @@ Traditional email clients answer:
 
 > "What emails do you have?"
 
-This product should answer:
+This project should answer:
 
 > "What do you need to do?"
 
@@ -72,7 +73,7 @@ A user receiving 100 emails per day may need to manually determine:
 9. Should I archive it?
 10. Should I remember to do something later?
 
-The product should automate this mental classification.
+The project should automate this mental classification.
 
 ---
 
@@ -106,7 +107,7 @@ The user should be able to open the application and immediately understand:
 
 ## 4.1 Primary Users
 
-The initial target audience is professionals who receive significant amounts of email.
+The initial target audience is developers and professionals who receive significant amounts of email.
 
 Examples:
 
@@ -126,7 +127,7 @@ Examples:
 
 ## 4.2 Ideal Early User
 
-The ideal initial customer receives approximately:
+The ideal initial user is comfortable self-hosting (or running locally with Docker), cares about owning their email data, and receives approximately:
 
 **50–200+ emails per day**
 
@@ -136,9 +137,9 @@ and frequently thinks:
 
 ---
 
-# 5. Product Positioning
+# 5. Project Positioning
 
-Do NOT position the product simply as:
+Do NOT position the project simply as:
 
 > "AI email sorting."
 
@@ -146,103 +147,65 @@ That is too generic.
 
 The stronger positioning is:
 
-> **An AI buddy for your inbox.**
+> **An open-source AI buddy for your inbox.**
 
 Potential messaging:
 
 * "Your inbox, without the work."
 * "Know what matters in your inbox."
-* "Your AI email manager."
-* "Stop managing email. Start managing what matters."
 * "Your inbox should tell you what to do."
+* "Open-source, self-hosted, you own your data."
 
-The central differentiator is:
+The central differentiators are:
 
-> **The product converts email into actionable information.**
-
----
-
-# 6. Business Model
-
-The product will have two primary services.
+> **Email becomes actionable information.**
+>
+> **You host it, you own the data, you choose the AI model.**
 
 ---
 
-# 6.1 Service A — Continuous Inbox Manager
+# 6. Open-Source Model
 
-## Pricing
+There is no paid tier, subscription, or payment processing. The project is free to use, modify, and self-host.
 
-**$5/month**
+## 6.1 Self-Hosting First
 
-The user subscribes to continuous email management.
+* Runs locally or on the user's own server via Docker Compose.
+* One user or a small group (family/team) per instance is the expected scale.
+* Each deployment uses its own Google OAuth credentials and database.
 
-Whenever a new email arrives:
+## 6.2 Bring Your Own AI Key
 
-```text
-New Email
-    ↓
-AI Processing
-    ↓
-Classification
-    ↓
-Intent Detection
-    ↓
-Importance Detection
-    ↓
-Reply Detection
-    ↓
-Action Detection
-    ↓
-Summary
-    ↓
-Dashboard
-```
+* The user supplies their own AI provider API key (or points to a local model, e.g. Ollama).
+* The AI layer is model-agnostic (see Technical Principles).
+* The app shows estimated AI cost per email so users understand their own spend.
 
-The system continuously processes incoming emails.
+## 6.3 Backlog and Continuous Processing
 
----
+Both modes remain, but are controlled by the user instead of billing:
 
-# 6.2 Service B — Pay Per Email
+* **Continuous:** every new email is processed automatically once a mailbox is connected.
+* **Backlog:** user selects existing emails to process:
+  * Selected emails
+  * All unread emails
+  * Last 7 / 30 days
+  * A date range
 
-This service is designed for existing email backlog.
+Optional safeguards: configurable daily/total processing limits to cap AI spend.
 
-A user who does not want a subscription can select existing emails and pay based on the number of emails processed.
+## 6.4 Community & Sustainability
 
-Example:
-
-```text
-User selects:
-
-237 unread emails
-        ↓
-System calculates processing cost
-        ↓
-User confirms payment
-        ↓
-Emails enter processing queue
-        ↓
-AI processes emails
-        ↓
-Inbox intelligence generated
-```
-
-Possible processing options:
-
-* Process selected emails
-* Process all unread emails
-* Process emails from the last 7 days
-* Process emails from the last 30 days
-* Process a selected date range
-
-The exact pricing per email should be configurable by the business.
+* Public repository, issue tracker, and discussions.
+* `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md`.
+* Optional donations/sponsorship (GitHub Sponsors). No monetization is required for the project to succeed.
 
 ---
 
-# 7. Core Product Philosophy
+# 7. Core Philosophy
 
 ## 7.1 Do Not Aggressively Modify the User's Mailbox
 
-Trust is critical.
+Trust is critical, especially for a project that handles personal email.
 
 The AI should initially be conservative.
 
@@ -1279,6 +1242,8 @@ thread_analysis
 
 ## Usage
 
+Tracks AI cost per email (for transparency, not billing).
+
 ```text
 usage
 --------------------------------
@@ -1286,93 +1251,57 @@ id
 user_id
 email_id
 processing_type
-amount
+model
+tokens_in
+tokens_out
+estimated_cost
 created_at
 ```
 
 ---
 
-## Subscriptions
+# 33. Usage & Cost Tracking
 
-```text
-subscriptions
---------------------------------
-id
-user_id
-plan
-status
-started_at
-renewal_at
-cancelled_at
-```
-
----
-
-# 33. Billing Architecture
-
-Billing should be separated from email processing.
-
-Conceptually:
-
-```text
-USER
- │
- ├── Subscription
- │       └── $5/month
- │
- └── Usage
-        ├── Email 1
-        ├── Email 2
-        ├── Email 3
-        └── ...
-```
-
-Maintain an internal usage ledger.
-
-Example:
+There is no billing. Keep an internal usage ledger so users can see and cap their own AI spend.
 
 ```text
 usage_id
 user_id
 email_id
 operation
+model
+tokens_in / tokens_out
+estimated_cost
 timestamp
-cost
 status
 ```
 
 This provides:
 
-* Billing transparency
-* Usage tracking
-* Refund support
-* Cost analysis
-* Fraud detection
+* Cost transparency
+* Spend limits
 * Debugging
+* Model comparison
 
 ---
 
-# 34. Subscription Processing
-
-For subscribed users:
+# 34. Continuous Processing
 
 ```text
-Subscription Active
+Mailbox connected & continuous mode on
         ↓
 New Email
         ↓
-Check Subscription
+Check limits (if configured)
         ↓
 Process Email
         ↓
 Record Usage
 ```
 
-If subscription becomes inactive:
+If the user turns continuous mode off or a limit is reached:
 
 ```text
-Subscription inactive
-        ↓
 Stop continuous processing
         ↓
 Existing processed data remains available
@@ -1380,29 +1309,21 @@ Existing processed data remains available
 
 ---
 
-# 35. Pay-Per-Email Processing
-
-Example:
+# 35. Backlog Processing
 
 ```text
 User selects 237 emails
-
-237 emails
-     ↓
-Calculate price
-     ↓
-Show confirmation
-     ↓
-Payment
-     ↓
-Payment successful
-     ↓
+        ↓
+Show estimated AI cost
+        ↓
+User confirms
+        ↓
 Create processing job
-     ↓
+        ↓
 Process emails
 ```
 
-The system must never start paid processing without a confirmed payment state.
+The system must never process a backlog without explicit user confirmation.
 
 ---
 
@@ -1541,7 +1462,7 @@ Security must be a first-class product requirement.
 * Allow mailbox disconnection
 * Allow email data deletion
 * Minimize stored data where possible
-* Do not use customer emails for model training without explicit policy/consent
+* Do not use users' emails for model training without explicit policy/consent
 * Log security-sensitive events
 
 ---
@@ -1620,12 +1541,13 @@ The first production MVP MUST include:
 * Edit reply
 * Create Gmail draft
 
-## Billing
+## Open-Source Basics
 
-* $5/month subscription
-* Pay-per-email
-* Usage tracking
-* Payment confirmation
+* Docker Compose setup
+* README with setup and Google OAuth instructions
+* Bring-your-own AI key configuration
+* Usage/cost tracking
+* LICENSE, CONTRIBUTING, SECURITY
 
 ---
 
@@ -1663,6 +1585,8 @@ Do NOT build these in V1.
 
 ## Other
 
+* Billing, subscriptions, payments
+* Hosted multi-tenant SaaS
 * Full Gmail replacement
 * Email marketing
 * Mass email sending
@@ -1786,7 +1710,7 @@ Recommended high-level architecture:
                             │
           ┌─────────────────┼─────────────────┐
           ↓                 ↓                 ↓
-     AUTH SERVICE      EMAIL SERVICE      BILLING
+     AUTH SERVICE      EMAIL SERVICE      USAGE 
           │                 │                 │
           │                 ↓                 │
           │            INGESTION             │
@@ -1823,7 +1747,7 @@ Responsible for:
 * Dashboard requests
 * Email queries
 * Reply generation
-* Billing requests
+* Usage/cost queries
 * User preferences
 
 ## Email Service
@@ -1855,14 +1779,13 @@ Responsible for:
 * Reply generation
 * Thread intelligence
 
-## Billing Service
+## Usage Service
 
 Responsible for:
 
-* Subscription
-* Pay-per-email
-* Usage
-* Payments
+* Usage ledger
+* Cost estimates
+* Optional spend limits
 
 ## Database
 
@@ -1875,7 +1798,6 @@ Stores:
 * Threads
 * Jobs
 * Usage
-* Billing
 
 ---
 
@@ -1955,23 +1877,15 @@ This is where the product starts feeling like an AI assistant.
 
 ---
 
-# 52. Phase 4 — Billing
+# 52. Phase 4 — Open-Source Readiness
 
 Implement:
 
-```text
-$5/month subscription
-        +
-Pay-per-email
-```
-
-Add:
-
-* Payment processing
-* Subscription state
-* Usage tracking
-* Usage ledger
-* Processing limits
+* Docker Compose / one-command setup
+* Bring-your-own AI key + model config
+* Usage tracking and optional spend limits
+* Docs, LICENSE, CONTRIBUTING, SECURITY
+* Backlog processing with cost estimate and confirmation
 
 ---
 
@@ -2011,7 +1925,7 @@ The inbox stays organized automatically.
 
 ## Step 1
 
-User visits website.
+User self-hosts the app (or runs it locally) and opens it.
 
 ---
 
@@ -2062,8 +1976,8 @@ System shows:
 ```text
 342 emails selected
 
-Processing cost:
-$X.XX
+Estimated AI cost:
+~$X.XX (your API key)
 
 [ Process Emails ]
 ```
@@ -2072,7 +1986,7 @@ $X.XX
 
 ## Step 7
 
-User pays.
+User confirms.
 
 ---
 
@@ -2144,7 +2058,7 @@ Track:
 * AI classification accuracy
 * Classification correction rate
 * Average processing time
-* AI cost per email
+* AI cost per email (user-visible)
 
 ## User Metrics
 
@@ -2155,22 +2069,16 @@ Track:
 * Reply suggestions accepted
 * Reply suggestions edited
 * AI classifications corrected
-* Daily active users
-* Weekly active users
 * Inbox reduction
 
-## Business Metrics
+## Community Metrics
 
 Track:
 
-* Free → paid conversion
-* Subscription retention
-* Pay-per-email purchases
-* Average revenue per user
-* AI cost per user
-* Gross margin
-* Customer acquisition cost
-* Lifetime value
+* GitHub stars and forks
+* Contributors
+* Issues opened/closed
+* Successful self-host installs (via issues/feedback, no telemetry by default)
 
 ---
 
@@ -2200,7 +2108,7 @@ AI processing must be asynchronous.
 
 ### 3. Idempotent
 
-The same email should never accidentally be processed multiple times as separate billable operations.
+The same email should never accidentally be processed multiple times (wasting the user's AI spend).
 
 ### 4. Auditable
 
@@ -2229,6 +2137,14 @@ Track AI token/model costs per email.
 ### 10. Security First
 
 Email data must be treated as sensitive.
+
+### 11. Self-Hostable
+
+Everything must run locally with minimal setup. No required external paid service besides the user's AI key.
+
+### 12. No Telemetry by Default
+
+The project must not phone home. Any analytics must be opt-in.
 
 ---
 
@@ -2267,12 +2183,12 @@ The MVP should be considered functional when:
 * User can edit the reply.
 * User can create a Gmail draft.
 
-### Billing
+### Open Source
 
-* User can subscribe to $5/month plan.
-* User can purchase pay-per-email processing.
-* System tracks processed emails.
-* System does not process unpaid pay-per-email jobs.
+* A new user can set up the project from the README using Docker.
+* AI provider/model is configurable via environment variables.
+* System tracks processed emails and estimated cost.
+* System does not process a backlog without user confirmation.
 
 ---
 
@@ -2286,13 +2202,14 @@ Do not spend excessive time initially on:
 * Complex automation
 * Multiple providers
 * Advanced analytics
+* Hosted/SaaS infrastructure and monetization
 * Autonomous agents
 
 The first question is:
 
 > **Will users trust the AI to understand their inbox, and does it genuinely save them time?**
 
-Validate this before expanding the system.
+Validate this (with early contributors and users) before expanding the system.
 
 ---
 
@@ -2320,11 +2237,11 @@ The fifth:
 
 The sixth:
 
-> **Add billing.**
+> **Add usage tracking and open-source packaging (Docker, docs, license).**
 
 The seventh:
 
-> **Turn on continuous processing for subscribers.**
+> **Turn on continuous processing.**
 
 ---
 
@@ -2371,17 +2288,17 @@ The seventh:
         ↓
 20. Gmail draft creation
         ↓
-21. Subscription billing
+21. Usage & cost tracking
         ↓
-22. Pay-per-email billing
+22. Docker Compose setup
         ↓
-23. Usage tracking
+23. README, LICENSE, CONTRIBUTING
         ↓
 24. New-email automation
         ↓
 25. Monitoring & error handling
         ↓
-26. Beta launch
+26. Public release (v0.1)
 ```
 
 ---
@@ -2390,7 +2307,7 @@ The seventh:
 
 The MVP is:
 
-> **A web application that connects to Gmail, understands existing and incoming emails using AI, organizes them into actionable views, summarizes important conversations, identifies emails requiring replies/actions, generates reply drafts, and supports both $5/month continuous processing and pay-per-email inbox cleanup.**
+> **An open-source, self-hostable web application that connects to Gmail, understands existing and incoming emails using AI (user-provided API key), organizes them into actionable views, summarizes important conversations, identifies emails requiring replies/actions, generates reply drafts, and supports both continuous processing and backlog cleanup.**
 
 The MVP should NOT attempt to replace Gmail.
 
@@ -2446,16 +2363,16 @@ Follow-ups
 Actions
 ```
 
-At that point, email is no longer the product.
+At that point, email is no longer the focus.
 
-**The product is an AI layer that manages the user's communication workload.**
+**The project is an open-source AI layer that manages the user's communication workload.**
 
 ---
 
-# 64. Product North Star
+# 64. North Star
 
-The simplest way to define the product is:
+The simplest way to define success is:
 
-> **If the user opens the app and immediately knows what they need to do, what can wait, and what can be ignored, the product has succeeded.**
+> **If the user opens the app and immediately knows what they need to do, what can wait, and what can be ignored, the project has succeeded.**
 
 The product should make the user's inbox feel less like a mailbox and more like a **personal assistant that has already done the first pass for them.**
